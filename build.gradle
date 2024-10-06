@@ -20,6 +20,7 @@ buildscript {
 }
 plugins {
     id("io.gitlab.arturbosch.detekt") version("$detekti_version")
+    id 'org.jetbrains.kotlin.android' version '1.9.20' apply false
 }
 
 allprojects {
