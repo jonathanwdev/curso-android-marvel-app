@@ -5,16 +5,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.core.domain.models.Character
 import com.example.marvelapp.R
 import com.example.marvelapp.databinding.FragmentCharactersBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class CharactersFragment : Fragment() {
     private var _binding: FragmentCharactersBinding? = null
     private val binding: FragmentCharactersBinding get() = _binding!!
+    private val charactersViewModel: CharactersViewModel by viewModels()
+
     private val charactersAdapter = CharactersAdapter()
 
     override fun onCreateView(
@@ -32,22 +37,12 @@ class CharactersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initCharactersAdapter()
-        charactersAdapter.submitList(
-            listOf(
-                Character(
-                    "3D-man",
-                    "https://tm.ibxk.com.br//ms/images/highlights/000/054/151/50847.jpg"
-                ),
-                Character(
-                    "3D-man",
-                    "https://tm.ibxk.com.br//ms/images/highlights/000/054/151/50847.jpg"
-                ),
-                Character(
-                    "3D-man",
-                    "https://tm.ibxk.com.br//ms/images/highlights/000/054/151/50847.jpg"
-                ),
-            )
-        )
+        lifecycleScope.launch {
+            charactersViewModel.charactersPagingData("").collect { pagingData ->
+                charactersAdapter.submitData(pagingData)
+            }
+        }
+
     }
 
     private fun initCharactersAdapter() {
